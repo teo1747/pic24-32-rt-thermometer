@@ -10,6 +10,8 @@ A digital thermometer for Microchip PIC microcontrollers, built in three stages 
 
 All projects were built with MPLAB X IDE v6 and flashed with the on-board PICkit (PKOB).
 
+The FreeRTOS versions are described in the lab report (in French): [TP_RT_Therm_Harmony_V3_AND_FreeRTOS.pdf](TP_RT_Therm_Harmony_V3_AND_FreeRTOS.pdf).
+
 ## ThermoV1: bare-metal PIC24
 
 - ADC1 samples the temperature sensor (AN4) continuously. Its interrupt sets a flag, and the main loop reads the sample and converts it to tenths of a degree.
@@ -48,7 +50,7 @@ ThermoV1.1/src/              Application tasks and Harmony/FreeRTOS config
 ThermoV1.1/Thermo_V1.X/      MPLAB X project
 ThermoV2/src/                Application tasks and Harmony/FreeRTOS config
 ThermoV2/Thermo.X/           MPLAB X project and PIC32 LCD driver (lcd.c, lcd.h)
-TP_RT_Therm__Harmony_V3___FreeRTOS_.pdf   FreeRTOS lab report (in progress)
+TP_RT_Therm_Harmony_V3_AND_FreeRTOS.pdf   FreeRTOS lab report (French)
 ```
 
 ## Building
