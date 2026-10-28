@@ -12,9 +12,10 @@ All projects were built with MPLAB X IDE v6 and flashed with the on-board PICkit
 
 ## ThermoV1: bare-metal PIC24
 
-- The ADC interrupt sets a flag, and the main loop reads the sample and converts it to °C.
+- ADC1 samples the temperature sensor (AN4) continuously. Its interrupt sets a flag, and the main loop reads the sample and converts it to tenths of a degree.
 - A 16-character LCD shows a menu: **1. Real-time** (button on RD6) or **2. View history** (button on RD7).
-- The last 10 readings are kept in a circular buffer, each with an RTCC timestamp (minutes:seconds). When the buffer wraps, the readings and timestamps are written to an external SPI EEPROM (`eepromcommand.c`, chip select on RG0). The history screen reads them back and shows each reading with its timestamp.
+- The last 10 readings are kept in a circular buffer, each with an RTCC timestamp (minutes:seconds). When the buffer wraps, the readings and timestamps are written to an external 25LC256 SPI EEPROM (`eepromcommand.c`, chip select on RG0). Each temperature takes 2 bytes, and each write waits for the EEPROM to finish.
+- The history screen reads them back, oldest first, as `T1   24.8C 30:04` (reading number, °C, mm:ss).
 
 ## ThermoV2: FreeRTOS on PIC32MZ
 

@@ -49,17 +49,27 @@
 #include <libpic30.h>
 #include <time.h>
 
-#include "mcc_generated_files/system.h"
+#include <stdio.h>
 
- uint8_t flag = 0;
- uint8_t temperature;
+#include "mcc_generated_files/system.h"
+#include "mcc_generated_files/adc1.h"
+#include "mcc_generated_files/rtcc.h"
+#include "lcd.h"
+
+ volatile uint8_t flag = 0;
+ uint16_t temperature;                          // tenths of a degree C
  uint16_t buffer;
  uint8_t bufferFull = 0;
- uint8_t historyIndex = 0; 
+ uint8_t historyIndex = 0;
  struct tm currentTime;
- uint16_t temperatureHistory[MAX_MEASUREMENTS];
- uint16_t secondHistory[MAX_MEASUREMENTS];
- uint16_t minuteHistory[MAX_MEASUREMENTS];
+ uint16_t temperatureHistory[MAX_MEASUREMENTS]; // tenths of a degree C
+ uint8_t secondHistory[MAX_MEASUREMENTS];
+ uint8_t minuteHistory[MAX_MEASUREMENTS];
+
+#define NO_MEASUREMENT 0xFFFF // what an erased EEPROM reads
+
+void SendAllMeasurementsToEEPROM(const uint16_t temperatures[], const uint8_t minutes[], const uint8_t seconds[]);
+void FetchAllMeasurementsFromEEPROM(uint16_t temperatures[], uint8_t minutes[], uint8_t seconds[]);
  
 
 /*
@@ -101,10 +111,10 @@ int main(void)
     
     
     unsigned int len = 16;
-    char tempString[len];
-    
-      
-    
+    char tempString[24];
+
+
+
     while (1)
     {
         DisplayMenu();
@@ -113,22 +123,23 @@ int main(void)
         if(PORTDbits.RD6 ==0){
             
             LCD_ClearScreen();
-            sprintf(tempString, "%.1d C\r", temperature);
+            sprintf(tempString, "%.1f C\r", temperature / 10.0);
             LCD_PutString(tempString, len);
              __delay_ms(500);
         }
         
         if(PORTDbits.RD7 == 0){
-            uint8_t measurements[MAX_MEASUREMENTS];
-            uint8_t measurements1[MAX_MEASUREMENTS];
-            uint8_t measurements2[MAX_MEASUREMENTS];
-            FetchAllMeasurementsFromEEPROM(measurements,measurements1,measurements2);
+            uint16_t temperatures[MAX_MEASUREMENTS];
+            uint8_t minutes[MAX_MEASUREMENTS];
+            uint8_t seconds[MAX_MEASUREMENTS];
+            FetchAllMeasurementsFromEEPROM(temperatures, minutes, seconds);
             LCD_ClearScreen();
+            // The EEPROM holds the last full history, oldest first
             for (uint8_t i = 0; i < MAX_MEASUREMENTS; i++) {
-                uint8_t index = (historyIndex + i) % MAX_MEASUREMENTS; // Circular index
-                if (measurements[index] != 0) { // Only display valid measurements
-                    sprintf(tempString, "T%d: %.1f C %d:%d\r\n", i + 1, measurements[index] / 10.0,measurements1[index],measurements2[index]);
-                    LCD_PutString(tempString, 16);
+                if (temperatures[i] != NO_MEASUREMENT) { // Only display valid measurements
+                    // 16 characters, one LCD line: "T1   23.5C 12:34"
+                    sprintf(tempString, "T%-2u %5.1fC %02u:%02u\r\n", i + 1, temperatures[i] / 10.0, minutes[i], seconds[i]);
+                    LCD_PutString(tempString, sizeof tempString);
                     __delay_ms(500); // Allow time for display update
         }   
     }
@@ -136,14 +147,15 @@ int main(void)
         
        
         if (flag){
+            flag = 0;
             ADC1_ConversionResultBufferGet( &buffer);
             // Sensor: 500 mV at 0 C, 10 mV/C; 10-bit ADC, 3.3 V reference
             double celsius = (((buffer * 3.3) / 1023) - 0.5) * 100;
-            temperature = (celsius > 0) ? celsius : 0; // temperature is unsigned
-            StoreTemperature(temperature * 10);
+            temperature = (celsius > 0) ? celsius * 10 + 0.5 : 0; // tenths, unsigned
+            StoreTemperature(temperature);
             
             if (historyIndex == 0) {
-                SendAllMeasurementsToEEPROM(temperatureHistory,secondHistory,minuteHistory);
+                SendAllMeasurementsToEEPROM(temperatureHistory, minuteHistory, secondHistory);
         
            
     }

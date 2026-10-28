@@ -96,9 +96,9 @@ void ADC1_Initialize (void)
 
    AD1CHS = 0x0000;
 
-    // CSS25 enabled; CSS24 enabled; CSS23 disabled; CSS22 disabled; CSS21 disabled; CSS20 disabled; CSS30 enabled; CSS19 disabled; CSS18 disabled; CSS29 enabled; CSS17 disabled; CSS28 enabled; CSS16 disabled; 
+    // CSS25 disabled; CSS24 disabled; CSS23 disabled; CSS22 disabled; CSS21 disabled; CSS20 disabled; CSS30 disabled; CSS19 disabled; CSS18 disabled; CSS29 disabled; CSS17 disabled; CSS28 disabled; CSS16 disabled; 
 
-   AD1CSSH = 0x7300;
+   AD1CSSH = 0x0000;
 
     // CSS9 disabled; CSS8 disabled; CSS7 disabled; CSS6 disabled; CSS5 disabled; CSS4 enabled; CSS3 disabled; CSS2 disabled; CSS15 disabled; CSS1 disabled; CSS14 disabled; CSS0 disabled; CSS13 disabled; CSS12 disabled; CSS11 disabled; CSS10 disabled; 
 
