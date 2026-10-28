@@ -71,7 +71,7 @@
       <itemPath>../src/acquisition.h</itemPath>
       <itemPath>../src/analysis.h</itemPath>
       <itemPath>../src/display.h</itemPath>
-      <itemPath>D:/Microchip/Projet-Thermo-main/Thermo_v1.X/lcd.h</itemPath>
+      <itemPath>../../ThermoV2/Thermo.X/lcd.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -150,12 +150,11 @@
       <itemPath>../src/acquisition.c</itemPath>
       <itemPath>../src/main.c</itemPath>
       <itemPath>../src/display.c</itemPath>
-      <itemPath>D:/Microchip/Projet-Thermo-main/Thermo_v1.X/lcd.c</itemPath>
+      <itemPath>../../ThermoV2/Thermo.X/lcd.c</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
-    <Elem>D:/Microchip/Projet_Thermo/Thermo.X</Elem>
-    <Elem>D:/Microchip/Projet-Thermo-main/Thermo_v1.X</Elem>
+    <Elem>../../ThermoV2/Thermo.X</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>

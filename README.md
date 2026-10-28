@@ -14,7 +14,7 @@ All projects were built with MPLAB X IDE v6 and flashed with the on-board PICkit
 
 - The ADC interrupt sets a flag, and the main loop reads the sample and converts it to °C.
 - A 16-character LCD shows a menu: **1. Real-time** (button on RD6) or **2. View history** (button on RD7).
-- The last 10 readings are kept in a circular buffer. When the buffer wraps, they are written to an external SPI EEPROM (`eepromcommand.c`, chip select on RG0) and read back for the history screen.
+- The last 10 readings are kept in a circular buffer, each with an RTCC timestamp (minutes:seconds). When the buffer wraps, the readings and timestamps are written to an external SPI EEPROM (`eepromcommand.c`, chip select on RG0). The history screen reads them back and shows lines like `T1: 23.5 C 12:34`.
 
 ## ThermoV2: FreeRTOS on PIC32MZ
 
@@ -39,12 +39,13 @@ ThermoV1.1 is the first version of this pipeline. There, the display task starts
 ## Repository layout
 
 ```
-ThermoV1/ThermoV1.X/         MPLAB X project, application code and MCC drivers
+ThermoV1/ThermoV1.X/         MPLAB X project, application code, PIC24 LCD driver, MCC drivers
+ThermoV1/rapportPIC24MAMBO_MOTSOU_JUNIOR.pdf   PIC24 (V1) report
 ThermoV1.1/src/              Application tasks and Harmony/FreeRTOS config
 ThermoV1.1/Thermo_V1.X/      MPLAB X project
 ThermoV2/src/                Application tasks and Harmony/FreeRTOS config
-ThermoV2/Thermo.X/           MPLAB X project and LCD driver (lcd.c, lcd.h)
-TP_RT_Therm__Harmony_V3___FreeRTOS_.pdf   Lab report (in progress)
+ThermoV2/Thermo.X/           MPLAB X project and PIC32 LCD driver (lcd.c, lcd.h)
+TP_RT_Therm__Harmony_V3___FreeRTOS_.pdf   FreeRTOS lab report (in progress)
 ```
 
 ## Building
@@ -55,15 +56,9 @@ TP_RT_Therm__Harmony_V3___FreeRTOS_.pdf   Lab report (in progress)
 
 To regenerate the drivers, open `Thermo.mc3` with MCC (V1) or the MCC Harmony content manager (V1.1 and V2).
 
-## Opening the projects on another machine
-
-The projects were developed on Windows under `D:/Microchip/`. The LCD driver was shared between versions by linking the files from the V1 project folder, not by copying them. After cloning:
-
-- **ThermoV1.1**: the project links `lcd.c` and `lcd.h` from `D:/Microchip/Projet-Thermo-main/Thermo_v1.X/`. Remove those two entries in MPLAB X and add the LCD files from this repository.
-- **ThermoV2**: `src/main.c` still includes `../Thermo.X/Lcd_print.h`, the old name of the LCD header. The driver is now `Thermo.X/lcd.c` and `lcd.h`, so point the include there.
-
 ## Notes
 
+- **LCD drivers**: V1 has its own PIC24 driver (EPMP). V1.1 and V2 share the PIC32 driver in `ThermoV2/Thermo.X/` (PMP + Timer 2), which V1.1 links by relative path. The projects were first developed on Windows, where these links were absolute `D:/Microchip/...` paths.
 - **ThermoV1**: the conversion subtracts the 0.5 V sensor offset after scaling to °C instead of before, so readings are offset. V2 uses the corrected formula.
 
 ## History

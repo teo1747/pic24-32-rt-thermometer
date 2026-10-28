@@ -47,6 +47,7 @@
 #define FCY  (FOSC / 2)
 #define MAX_MEASUREMENTS 10
 #include <libpic30.h>
+#include <time.h>
 
 #include "mcc_generated_files/system.h"
 
@@ -55,7 +56,10 @@
  uint16_t buffer;
  uint8_t bufferFull = 0;
  uint8_t historyIndex = 0; 
+ struct tm currentTime;
  uint16_t temperatureHistory[MAX_MEASUREMENTS];
+ uint16_t secondHistory[MAX_MEASUREMENTS];
+ uint16_t minuteHistory[MAX_MEASUREMENTS];
  
 
 /*
@@ -74,13 +78,16 @@
     sprintf(tempString1, " 2.View-History ");
     LCD_PutString(tempString, len);
     LCD_PutString(tempString1, len);
-     __delay_ms(100);
+    __delay_ms(100);
     
 }
  
  void StoreTemperature(uint16_t temperature) {
     // Store the temperature in the current index
     temperatureHistory[historyIndex] = temperature;
+    RTCC_TimeGet( &currentTime);
+    minuteHistory[historyIndex] = currentTime.tm_min;
+    secondHistory[historyIndex] = currentTime.tm_sec;
     // Increment the index and wrap around if needed
     historyIndex = (historyIndex + 1) % MAX_MEASUREMENTS;
 }
@@ -108,17 +115,19 @@ int main(void)
             LCD_ClearScreen();
             sprintf(tempString, "%.1d C\r", temperature);
             LCD_PutString(tempString, len);
-             __delay_ms(500)
+             __delay_ms(500);
         }
         
         if(PORTDbits.RD7 == 0){
             uint8_t measurements[MAX_MEASUREMENTS];
-            FetchAllMeasurementsFromEEPROM(measurements);
+            uint8_t measurements1[MAX_MEASUREMENTS];
+            uint8_t measurements2[MAX_MEASUREMENTS];
+            FetchAllMeasurementsFromEEPROM(measurements,measurements1,measurements2);
             LCD_ClearScreen();
             for (uint8_t i = 0; i < MAX_MEASUREMENTS; i++) {
                 uint8_t index = (historyIndex + i) % MAX_MEASUREMENTS; // Circular index
                 if (measurements[index] != 0) { // Only display valid measurements
-                    sprintf(tempString, "T%d: %.1f C\r\n", i + 1, measurements[index] / 10.0);
+                    sprintf(tempString, "T%d: %.1f C %d:%d\r\n", i + 1, measurements[index] / 10.0,measurements1[index],measurements2[index]);
                     LCD_PutString(tempString, 16);
                     __delay_ms(500); // Allow time for display update
         }   
@@ -132,7 +141,7 @@ int main(void)
             StoreTemperature(temperature * 10);
             
             if (historyIndex == 0) {
-                SendAllMeasurementsToEEPROM(temperatureHistory);
+                SendAllMeasurementsToEEPROM(temperatureHistory,secondHistory,minuteHistory);
         
            
     }

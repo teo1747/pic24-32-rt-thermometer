@@ -9,8 +9,7 @@
             <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>
             <sourceRootList>
-                <sourceRootElem>D:/Microchip/Projet_Thermo/Thermo.X</sourceRootElem>
-                <sourceRootElem>D:/Microchip/Projet-Thermo-main/Thermo_v1.X</sourceRootElem>
+                <sourceRootElem>../../ThermoV2/Thermo.X</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>
