@@ -31,6 +31,7 @@
 #include "display.h"
 #include "../Thermo.X/lcd.h"
 #include "analysis.h"
+#include "temp_message.h"
 #include "config/default/peripheral/gpio/plib_gpio.h"
 #include "config/default/peripheral/adchs/plib_adchs.h"
 
@@ -58,6 +59,8 @@
 
 DISPLAY_DATA displayData;
 
+volatile TempUnit_t currentTempUnit = TEMP_UNIT_CELSIUS;
+
 
 // *****************************************************************************
 // *****************************************************************************
@@ -75,8 +78,13 @@ DISPLAY_DATA displayData;
 // *****************************************************************************
 
 
-/* TODO:  Add any necessary local functions.
-*/
+/* Switch between Celsius and Fahrenheit; the analysis task puts the new unit
+ * in the next messages too */
+TempUnit_t ToggleTempUnit(TempUnit_t unit)
+{
+    currentTempUnit = (unit == TEMP_UNIT_CELSIUS) ? TEMP_UNIT_FAHRENHEIT : TEMP_UNIT_CELSIUS;
+    return currentTempUnit;
+}
 
 
 // *****************************************************************************
@@ -136,18 +144,21 @@ void DISPLAY_Tasks ( void )
 
         case DISPLAY_STATE_SERVICE_TASKS:
         {
-            double Temp;
-            
-             if (xSemaphoreTake(mySemaphore1, 0) != 0)
-             {
-                 
-                  if (xQueueReceive( myQueue1, &Temp, 0) != 0)
-                {
-                     displayTemperature(Temp); // temperatureValue is your double
-                     Delay_ms(50);
-                     Led9_Toggle();
+            TempMessage_t tempMsg;
+
+            if(xSemaphoreTake(xSemaphoreTemp,0) == pdPASS ){
+
+                if(xQueueReceive(myQueueTemp, &tempMsg, 0) == pdPASS){
+
+                    if (GPIO_PinRead(GPIO_PIN_RD13) == 0)    // Active-low button S6
+                    {
+                        tempMsg.unit = ToggleTempUnit(tempMsg.unit);
+                        GPIO_PinToggle(GPIO_PIN_RA6);
+                    }
+
+                    displayTemperature(tempMsg);
                 }
-             } 
+            }
             break;
         }
 

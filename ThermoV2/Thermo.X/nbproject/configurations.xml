@@ -71,6 +71,7 @@
       <itemPath>../src/acquisition.h</itemPath>
       <itemPath>../src/analysis.h</itemPath>
       <itemPath>../src/display.h</itemPath>
+      <itemPath>../src/temp_message.h</itemPath>
       <itemPath>lcd.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"

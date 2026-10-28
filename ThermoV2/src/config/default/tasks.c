@@ -68,7 +68,7 @@ static void lACQUISITION_Tasks(  void *pvParameters  )
     while(true)
     {
         ACQUISITION_Tasks();
-        vTaskDelay(500U / portTICK_PERIOD_MS);
+        vTaskDelay(150U / portTICK_PERIOD_MS);
     }
 }
 /* Handle for the ANALYSIS_Tasks. */

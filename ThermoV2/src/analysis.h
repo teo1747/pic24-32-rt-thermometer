@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include "configuration.h"
 #include "acquisition.h"
+#include "temp_message.h"
 
 // DOM-IGNORE-BEGIN
 #ifdef __cplusplus  // Provide C++ Compatibility
@@ -58,8 +59,8 @@ extern "C" {
     This enumeration defines the valid application states.  These states
     determine the behavior of the application at various times.
 */
-    extern QueueHandle_t myQueue1;
-    extern SemaphoreHandle_t  mySemaphore1;
+    extern QueueHandle_t myQueueTemp;           // TempMessage_t, to the display task
+    extern SemaphoreHandle_t  xSemaphoreTemp;
 
 typedef enum
 {

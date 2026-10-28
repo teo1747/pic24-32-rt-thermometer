@@ -31,6 +31,7 @@
 #include "config/default/peripheral/tmr/plib_tmr2.h"
 
 #include "config/default/peripheral/tmr/plib_tmr_common.h"
+#include "temp_message.h"
 
 // *****************************************************************************
 
@@ -52,7 +53,7 @@ void writeString(char *string);
 
 void newLine(void);
 
-void displayTemperature(double temp);
+void displayTemperature(TempMessage_t msg);
  
  
 // *****************************************************************************

@@ -64,7 +64,7 @@ extern "C" {
 */
 
    extern QueueHandle_t myQueue;
-   extern SemaphoreHandle_t  mySemaphore;
+   extern SemaphoreHandle_t  xmysemaPhore;
     
 typedef enum
 {

@@ -56,7 +56,7 @@
 ACQUISITION_DATA acquisitionData;
 
  QueueHandle_t  myQueue;
- SemaphoreHandle_t  mySemaphore;
+ SemaphoreHandle_t  xmysemaPhore;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -99,7 +99,7 @@ void ACQUISITION_Initialize ( void )
     ADCHS_Initialize();
 
     myQueue = xQueueCreate( 10, sizeof( uint16_t ) );
-    mySemaphore = xSemaphoreCreateBinary();
+    xmysemaPhore = xSemaphoreCreateBinary();
     /* TODO: Initialize your application's state machine and other
      * parameters.
      */
@@ -137,22 +137,21 @@ void ACQUISITION_Tasks ( void )
         case ACQUISITION_STATE_SERVICE_TASKS:
         {
             ADCHS_GlobalEdgeConversionStart();
-            if (ADCHS_ChannelResultIsReady(ADCHS_CH4))
-            {  
-                uint16_t temp_value = ADCHS_ChannelResultGet(ADCHS_CH4);
-                if (myQueue == 0)
-                {
-                    break;
-                }
-                if(  xQueueSend( myQueue, &temp_value, 10) != 0)
-                {
-                    xSemaphoreGive(mySemaphore);
-                    Led6_Toggle() ;
+
+            if(ADCHS_ChannelResultIsReady(ADCHS_CH4)){
+
+                uint16_t Buffer = ADCHS_ChannelResultGet(ADCHS_CH4);
+
+                if( myQueue != 0 ){
+
+                    if( xQueueSend(myQueue,&Buffer,10) == pdPASS){
+
+                        // A new measurement is in myQueue: wake the analysis task
+                        xSemaphoreGive(xmysemaPhore);
+                        GPIO_PinToggle(GPIO_PIN_RA2);
+                    }
                 }
             }
-           
-
-            
             break;
         }
 

@@ -109,23 +109,24 @@ void newLine(void)
 }
  
  
-void displayTemperature(double temp)
+void displayTemperature(TempMessage_t msg)
 {
-    char buffer[16];
- 
+    char buffer[17];
+
     /* Clear display */
     writeToLCD(CMDREG, 0x01);
     Delay_ms(2);
- 
-    /* Line 1 */
-    writeString("Temp:");
- 
-   
- 
-    /* Format temperature */
-    /* Example output: 25.37 C */
-    sprintf(buffer, "%.2f C", temp);
- 
+
+    /* Line 1, in the unit chosen with the button: "Temp: 28 C" or "Temp: 82 F" */
+    if (msg.unit == TEMP_UNIT_FAHRENHEIT)
+        sprintf(buffer, "Temp: %d F", msg.value_f);
+    else
+        sprintf(buffer, "Temp: %d C", msg.value_c);
+    writeString(buffer);
+
+    /* Line 2: when it was measured, in minutes:seconds since boot */
+    newLine();
+    sprintf(buffer, "%02lu:%02lu", (unsigned long)(msg.timestamp / 60), (unsigned long)(msg.timestamp % 60));
     writeString(buffer);
 }/*
 * File:   display.c

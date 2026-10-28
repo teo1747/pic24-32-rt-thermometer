@@ -30,6 +30,7 @@
 #include "analysis.h"
 #include "acquisition.h"
 #include "config/default/peripheral/gpio/plib_gpio.h"
+#include "task.h"
 
 // *****************************************************************************
 // *****************************************************************************
@@ -54,8 +55,8 @@
 
 ANALYSIS_DATA analysisData;
 
-QueueHandle_t  myQueue1;
-SemaphoreHandle_t  mySemaphore1;
+QueueHandle_t  myQueueTemp;
+SemaphoreHandle_t  xSemaphoreTemp;
 
 // *****************************************************************************
 // *****************************************************************************
@@ -73,8 +74,11 @@ SemaphoreHandle_t  mySemaphore1;
 // *****************************************************************************
 
 
-/* TODO:  Add any necessary local functions.
-*/
+/* Round to the nearest whole degree */
+static int16_t RoundTemperature(double value)
+{
+    return (int16_t)(value < 0 ? value - 0.5 : value + 0.5);
+}
 
 
 // *****************************************************************************
@@ -96,8 +100,8 @@ void ANALYSIS_Initialize ( void )
     /* Place the App state machine in its initial state. */
     analysisData.state = ANALYSIS_STATE_INIT;
 
-    myQueue1 = xQueueCreate( 10, sizeof( double ) );
-    mySemaphore1 = xSemaphoreCreateBinary();
+    myQueueTemp = xQueueCreate( 10, sizeof( TempMessage_t ) );
+    xSemaphoreTemp = xSemaphoreCreateBinary();
 
     /* TODO: Initialize your application's state machine and other
      * parameters.
@@ -137,24 +141,28 @@ void ANALYSIS_Tasks ( void )
         {
             uint16_t  temp_val_A;// recupere la valeur de son frere temp_value
             double  Temp_real_value;
-             if (xSemaphoreTake(mySemaphore, 0) != 0)
-             {
-                  if (myQueue != NULL )
+            TempMessage_t  tempMsg;
+
+            // Blocked until the acquisition task signals a new measurement
+            if (xSemaphoreTake(xmysemaPhore, portMAX_DELAY) == pdPASS)
+            {
+                if (xQueueReceive(myQueue, &temp_val_A, 0) == pdPASS)
+                {
+                    Temp_real_value = (((temp_val_A*3.3)/4095) - 0.5)*100;
+
+                    // Both units, so the display can switch without recomputing
+                    tempMsg.value_c = RoundTemperature(Temp_real_value);
+                    tempMsg.value_f = RoundTemperature(Temp_real_value * 9 / 5 + 32);
+                    tempMsg.unit = currentTempUnit;
+                    tempMsg.timestamp = xTaskGetTickCount() / configTICK_RATE_HZ;
+
+                    if (xQueueSend(myQueueTemp, &tempMsg, 10) == pdPASS)
                     {
-                        if (xQueueReceive( myQueue, &temp_val_A, 0) != 0)
-                        {
-                             Temp_real_value = (((temp_val_A*3.3)/4095) - 0.5)*100;
-                              if(xQueueSend( myQueue1, &Temp_real_value, 10) != 0)
-                              {
-                                  xSemaphoreGive(mySemaphore1);
-                                  Led7_Toggle();
-                              }
-                        }
+                        xSemaphoreGive(xSemaphoreTemp);
+                        Led7_Toggle();
                     }
-                 
-             }
-           
-            
+                }
+            }
             break;
         }
 
