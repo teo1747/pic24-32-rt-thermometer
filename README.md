@@ -39,13 +39,13 @@ FreeRTOS settings (`src/config/default/FreeRTOSConfig.h`): preemptive scheduler,
 
 ### ThermoV1.1: RT-Therm V1
 
-Three tasks run every 500 ms, each with its own `vTaskDelay`. Acquisition sends the raw ADC value to the analysis task through `myQueue`, and analysis sends the temperature in °C to the display task through `myQueue1`.
+Three tasks run every 500 ms, each with its own `vTaskDelay`, and pass data through queues only, without semaphores. Acquisition sends the raw ADC value through `myQueue` and toggles D5 (RA2). Analysis converts it to °C, sends it through `myQueue1` and toggles D6 (RA3). Display toggles D9 (RA6) and shows a menu, or the temperature to 0.01 °C while S6 (RD13) is held.
 
 ![RT-Therm V1 tasks and queues (report, figure 3.6)](docs/images/rt-therm-v1-tasks.png)
 
 ![RT-Therm V1 on the board (report, figure 3.5)](docs/images/board-rt-therm-v1.jpg)
 
-The display task in this folder never starts Timer 2 or initializes the LCD, so the LCD stays blank; the version in the report also had a menu and used the S6 button.
+The task code follows the report's figures 3.2 to 3.4. `DisplayMenu()`, whose code the report does not show, was written when this version was brought in line with the report. It was checked with XC32 v4.60 on a simulated Explorer 16/32, not yet on the board.
 
 ### ThermoV2: RT-Therm V2
 

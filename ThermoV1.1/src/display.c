@@ -74,8 +74,17 @@ DISPLAY_DATA displayData;
 // *****************************************************************************
 
 
-/* TODO:  Add any necessary local functions.
-*/
+/* Shown while S6 is not pressed */
+static void DisplayMenu(void)
+{
+    /* Clear display */
+    writeToLCD(CMDREG, 0x01);
+    Delay_ms(2);
+
+    writeString("RT-Therm V1");
+    newLine();
+    writeString("S6: temperature");
+}
 
 
 // *****************************************************************************
@@ -120,6 +129,8 @@ void DISPLAY_Tasks ( void )
         /* Application's initial state. */
         case DISPLAY_STATE_INIT:
         {
+            TMR2_Start();
+            initializeLCD();
             bool appInitialized = true;
 
 
@@ -133,17 +144,23 @@ void DISPLAY_Tasks ( void )
 
         case DISPLAY_STATE_SERVICE_TASKS:
         {
-            double Temp;
-            
-            ADCHS_GlobalEdgeConversionStart();
-            
-             if (xQueueReceive( myQueue1, &Temp, 0) != 0)
-                {
-                     displayTemperature(Temp); // temperatureValue is your double
-                     Delay_ms(50);
-                     Led9_Toggle();
-                }
-              
+            double temp;
+            if( myQueue1 == 0 ){
+
+                break;
+            }
+            if(xQueueReceive(myQueue1,&temp,0) == pdPASS){
+                GPIO_PinToggle(GPIO_PIN_RA6);
+                DisplayMenu();
+                    if(GPIO_PinRead(GPIO_PIN_RD13) ==0){    // Active-low button S6
+
+                        displayTemperature(temp);
+                        Delay_ms(50);
+                        break;
+
+                    }
+
+            }
             break;
         }
 

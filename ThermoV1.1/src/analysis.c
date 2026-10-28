@@ -133,19 +133,19 @@ void ANALYSIS_Tasks ( void )
 
         case ANALYSIS_STATE_SERVICE_TASKS:
         {
-            uint16_t  temp_val_A;// recupere la valeur de son frere temp_value
-            double  Temp_real_value;
-            
-            if (myQueue != NULL )
-            {
-                if (xQueueReceive( myQueue, &temp_val_A, 0) != 0)
-                {
-                     Temp_real_value = (((temp_val_A*3.3)/4095) - 0.5)*100;
-                      xQueueSend( myQueue1, &Temp_real_value, 10) ;
-                      Led7_Toggle();
-                }
+            uint16_t Buffer0;
+            double Tempo;
+            if( myQueue == 0 ){
+                break;
             }
-            
+
+            if(xQueueReceive(myQueue,&Buffer0,0) == pdPASS){
+
+                Tempo = (((Buffer0*3.3)/4095) - 0.5)*100;
+                xQueueSend(myQueue1,&Tempo,10);
+                GPIO_PinToggle(GPIO_PIN_RA3);
+
+            }
             break;
         }
 

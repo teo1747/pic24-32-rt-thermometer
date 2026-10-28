@@ -134,20 +134,18 @@ void ACQUISITION_Tasks ( void )
 
         case ACQUISITION_STATE_SERVICE_TASKS:
         {
-            
-            if (ADCHS_ChannelResultIsReady(ADCHS_CH4))
-            {  
-                uint16_t temp_value = ADCHS_ChannelResultGet(ADCHS_CH4);
-                if (myQueue == 0)
-                {
-                    break;
-                }
-                 xQueueSend( myQueue, &temp_value, 10) ;
-                 Led6_Toggle() ;
-            }
-           
+            ADCHS_GlobalEdgeConversionStart();
 
-            
+            if(ADCHS_ChannelResultIsReady(ADCHS_CH4)){
+
+                uint16_t Buffer = ADCHS_ChannelResultGet(ADCHS_CH4);
+
+                if( myQueue != 0 ){
+
+                    xQueueSend(myQueue,&Buffer,10);
+                    GPIO_PinToggle(GPIO_PIN_RA2);
+                }
+            }
             break;
         }
 
