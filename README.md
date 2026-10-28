@@ -62,6 +62,3 @@ To regenerate the drivers, open `Thermo.mc3` with MCC (V1) or the MCC Harmony co
 ## Notes
 
 - **LCD drivers**: V1 has its own PIC24 driver (EPMP). V1.1 and V2 share the PIC32 driver in `ThermoV2/Thermo.X/` (PMP + Timer 2), which V1.1 links by relative path. The projects were first developed on Windows, where these links were absolute `D:/Microchip/...` paths.
-## History
-
-The commit history starts from [Soriane-Charle/Thermometre-temps-Reel](https://github.com/Soriane-Charle/Thermometre-temps-Reel).
