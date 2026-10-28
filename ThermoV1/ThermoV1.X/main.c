@@ -137,7 +137,9 @@ int main(void)
        
         if (flag){
             ADC1_ConversionResultBufferGet( &buffer);
-            temperature = (((buffer * 3.3) / 1023)*100)-0.5;
+            // Sensor: 500 mV at 0 C, 10 mV/C; 10-bit ADC, 3.3 V reference
+            double celsius = (((buffer * 3.3) / 1023) - 0.5) * 100;
+            temperature = (celsius > 0) ? celsius : 0; // temperature is unsigned
             StoreTemperature(temperature * 10);
             
             if (historyIndex == 0) {

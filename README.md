@@ -14,7 +14,7 @@ All projects were built with MPLAB X IDE v6 and flashed with the on-board PICkit
 
 - The ADC interrupt sets a flag, and the main loop reads the sample and converts it to °C.
 - A 16-character LCD shows a menu: **1. Real-time** (button on RD6) or **2. View history** (button on RD7).
-- The last 10 readings are kept in a circular buffer, each with an RTCC timestamp (minutes:seconds). When the buffer wraps, the readings and timestamps are written to an external SPI EEPROM (`eepromcommand.c`, chip select on RG0). The history screen reads them back and shows lines like `T1: 23.5 C 12:34`.
+- The last 10 readings are kept in a circular buffer, each with an RTCC timestamp (minutes:seconds). When the buffer wraps, the readings and timestamps are written to an external SPI EEPROM (`eepromcommand.c`, chip select on RG0). The history screen reads them back and shows each reading with its timestamp.
 
 ## ThermoV2: FreeRTOS on PIC32MZ
 
@@ -31,6 +31,8 @@ The conversion assumes an analog sensor with a 500 mV offset and 10 mV/°C, on a
 ```
 T(°C) = (raw × 3.3 / 4095 − 0.5) × 100
 ```
+
+ThermoV1 uses the same formula with its 10-bit ADC, dividing by 1023 instead of 4095.
 
 FreeRTOS settings (`ThermoV2/src/config/default/FreeRTOSConfig.h`): preemptive scheduler, 1 kHz tick, `heap_1` with a 28 000-byte heap, three tasks at priority 1 with 1024-word stacks.
 
@@ -59,8 +61,6 @@ To regenerate the drivers, open `Thermo.mc3` with MCC (V1) or the MCC Harmony co
 ## Notes
 
 - **LCD drivers**: V1 has its own PIC24 driver (EPMP). V1.1 and V2 share the PIC32 driver in `ThermoV2/Thermo.X/` (PMP + Timer 2), which V1.1 links by relative path. The projects were first developed on Windows, where these links were absolute `D:/Microchip/...` paths.
-- **ThermoV1**: the conversion subtracts the 0.5 V sensor offset after scaling to °C instead of before, so readings are offset. V2 uses the corrected formula.
-
 ## History
 
 The commit history starts from [Soriane-Charle/Thermometre-temps-Reel](https://github.com/Soriane-Charle/Thermometre-temps-Reel).
