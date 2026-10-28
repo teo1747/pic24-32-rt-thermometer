@@ -2,7 +2,7 @@
 
 #include "mcc_generated_files/mcc.h"
 #include <time.h>
-#define FOSC 16000000UL
+#define FOSC 8000000UL // FRC without PLL (mcc_generated_files/system.c)
 #define FCY  (FOSC / 2)
 
 #include <libpic30.h>

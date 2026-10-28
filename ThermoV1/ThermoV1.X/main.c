@@ -43,7 +43,7 @@
 */
 
 
-#define FOSC 16000000UL
+#define FOSC 8000000UL // FRC without PLL (mcc_generated_files/system.c)
 #define FCY  (FOSC / 2)
 #define MAX_MEASUREMENTS 10
 #include <libpic30.h>
@@ -81,8 +81,8 @@ void FetchAllMeasurementsFromEEPROM(uint16_t temperatures[], uint8_t minutes[], 
      
     LCD_ClearScreen();
     unsigned int len = 16;
-    char tempString[len];
-    char tempString1[len];
+    char tempString[len + 1];  // 16 characters and the terminating NUL
+    char tempString1[len + 1];
    
     sprintf(tempString, " 1.Real-time\r\n ");
     sprintf(tempString1, " 2.View-History ");
