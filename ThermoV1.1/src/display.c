@@ -32,7 +32,7 @@
 #include "analysis.h"
 #include "config/default/peripheral/gpio/plib_gpio.h"
 #include "config/default/peripheral/adchs/plib_adchs.h"
-#include "../../ThermoV2/Thermo.X/lcd.h"
+#include "../Thermo_V1.X/lcd.h"
 
 // *****************************************************************************
 // *****************************************************************************

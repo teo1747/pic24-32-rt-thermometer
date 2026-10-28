@@ -9,7 +9,6 @@
             <sourceEncoding>ISO-8859-1</sourceEncoding>
             <make-dep-projects/>
             <sourceRootList>
-                <sourceRootElem>../../ThermoV2/Thermo.X</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>

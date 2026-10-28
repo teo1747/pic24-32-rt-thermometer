@@ -26,7 +26,7 @@
 #include <stdbool.h>                    // Defines true
 #include <stdlib.h>                     // Defines EXIT_FAILURE
 #include "definitions.h"                // SYS function prototypes
-#include "../../ThermoV2/Thermo.X/lcd.h"
+#include "../Thermo_V1.X/lcd.h"
 
 
 // *****************************************************************************
