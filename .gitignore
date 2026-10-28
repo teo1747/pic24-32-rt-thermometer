@@ -11,6 +11,6 @@ debug/
 *.elf
 
 # MPLAB X per-machine and generated project files
-nbproject/private/
-nbproject/Makefile-*
-nbproject/Package-*
+**/nbproject/private/
+**/nbproject/Makefile-*
+**/nbproject/Package-*
