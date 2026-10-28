@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# MPLAB X build output
+build/
+dist/
+debug/
+.generated_files/
+*.o
+*.d
+*.elf
+
+# MPLAB X per-machine and generated project files
+nbproject/private/
+nbproject/Makefile-*
+nbproject/Package-*

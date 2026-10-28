@@ -1,0 +1,5 @@
+# Store text files with LF in the repo, whatever the OS line endings
+* text=auto
+
+*.pdf binary
+*.hex binary
